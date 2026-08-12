@@ -1,0 +1,5 @@
+Portfolio basics
+
+Diversification reduces unsystematic risk across assets.
+Efficient frontier compares expected return and volatility tradeoffs.
+Sharpe ratio measures excess return per unit of risk.

@@ -1,0 +1,15 @@
+{
+  "dataset_path": "backend/data/question_quality_labeled.jsonl",
+  "checkpoint_path": "backend/artifacts/question_quality_classifier.pt",
+  "train_example_count": 25,
+  "eval_example_count": 7,
+  "final_train_loss": 0.0,
+  "train_metrics": {
+    "loss": 0.0,
+    "accuracy": 1.0
+  },
+  "eval_metrics": {
+    "loss": 0.0789,
+    "accuracy": 1.0
+  }
+}

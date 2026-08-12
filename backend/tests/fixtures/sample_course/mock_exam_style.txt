@@ -1,0 +1,4 @@
+Midterm Style:
+Use concise academic wording.
+Mix concept recall with short written justification.
+Prefer direct prompts tied to course terminology.

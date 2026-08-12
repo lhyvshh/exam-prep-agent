@@ -1,0 +1,7 @@
+# Gradient Descent
+
+Gradient descent updates parameters by moving opposite the gradient.
+Learning rate controls how large each parameter update becomes.
+Batch gradient descent uses the entire dataset in each optimization step.
+Mini-batch training balances noisy updates with computational efficiency.
+Convergence depends on both the objective landscape and the chosen step size.

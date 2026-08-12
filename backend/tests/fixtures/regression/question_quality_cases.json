@@ -1,0 +1,81 @@
+{
+  "cases": [
+    {
+      "name": "grounded_mcq_high_quality",
+      "input": {
+        "question_id": "quality-1",
+        "prompt": "Which statement is supported by the section \"Gradient Descent\"?",
+        "question_type": "mcq",
+        "concept": "Gradient Descent",
+        "section_title": "Gradient Descent",
+        "difficulty": 0.58,
+        "options": [
+          "Gradient descent updates parameters by moving opposite the gradient.",
+          "Gradient descent always removes the learning rate.",
+          "Gradient descent cannot be used for optimization.",
+          "Gradient descent is unrelated to step size."
+        ],
+        "rationale": "Grounded in the retrieved passage for this section.",
+        "citation_count": 1
+      },
+      "expected_label": "high_quality",
+      "accepted_for_delivery": true,
+      "min_score": 0.5,
+      "max_score": 1.0
+    },
+    {
+      "name": "grounded_short_answer_high_quality",
+      "input": {
+        "question_id": "quality-2",
+        "prompt": "In one or two sentences, explain the main idea from the section \"Gradient Descent\".",
+        "question_type": "short_answer",
+        "concept": "Gradient Descent",
+        "section_title": "Gradient Descent",
+        "difficulty": 0.55,
+        "options": [],
+        "rationale": "Answer should stay close to the retrieved passage.",
+        "citation_count": 1
+      },
+      "expected_label": "high_quality",
+      "accepted_for_delivery": true,
+      "min_score": 0.5,
+      "max_score": 1.0
+    },
+    {
+      "name": "underspecified_mcq_low_quality",
+      "input": {
+        "question_id": "quality-3",
+        "prompt": "Pick answer.",
+        "question_type": "mcq",
+        "concept": "",
+        "section_title": "",
+        "difficulty": 0.4,
+        "options": ["A", "B"],
+        "rationale": "",
+        "citation_count": 0
+      },
+      "expected_label": "low_quality",
+      "accepted_for_delivery": false,
+      "min_score": 0.0,
+      "max_score": 0.49
+    },
+    {
+      "name": "ungrounded_short_answer_low_quality",
+      "input": {
+        "question_id": "quality-4",
+        "prompt": "What?",
+        "question_type": "short_answer",
+        "concept": "",
+        "section_title": "",
+        "difficulty": 0.5,
+        "options": [],
+        "rationale": "",
+        "citation_count": 0
+      },
+      "expected_label": "low_quality",
+      "accepted_for_delivery": false,
+      "min_score": 0.0,
+      "max_score": 0.49
+    }
+  ]
+}

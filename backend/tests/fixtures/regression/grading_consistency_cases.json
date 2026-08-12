@@ -1,0 +1,35 @@
+{
+  "course_id": "course-regression",
+  "source_fixture": "gradient_descent_section.txt",
+  "source_content_type": "text/plain",
+  "quiz_request": {
+    "course_id": "course-regression",
+    "query": "gradient descent",
+    "question_count": 2,
+    "question_types": ["mcq", "short_answer"],
+    "retrieval_top_k": 2
+  },
+  "scenarios": [
+    {
+      "name": "all_correct_answers",
+      "answer_mode": "all_correct",
+      "expected_overall_score": 100.0,
+      "expected_result_correctness": [true, true],
+      "expected_wrong_concepts": []
+    },
+    {
+      "name": "all_incorrect_answers",
+      "answer_mode": "all_incorrect",
+      "expected_overall_score": 0.0,
+      "expected_result_correctness": [false, false],
+      "expected_wrong_concepts": ["Gradient Descent"]
+    },
+    {
+      "name": "alternating_answers",
+      "answer_mode": "alternating",
+      "expected_overall_score": 50.0,
+      "expected_result_correctness": [true, false],
+      "expected_wrong_concepts": ["Gradient Descent"]
+    }
+  ]
+}

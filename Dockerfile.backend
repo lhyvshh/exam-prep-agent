@@ -1,0 +1,27 @@
+FROM python:3.11-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    EXAM_PREP_APP_ENV=production \
+    EXAM_PREP_DEBUG=false \
+    EXAM_PREP_APP_HOST=0.0.0.0 \
+    EXAM_PREP_SQLITE_PATH=/data/exam_prep.sqlite3 \
+    EXAM_PREP_MATERIAL_STORAGE_PATH=/data/materials \
+    EXAM_PREP_ENABLE_TORCH_INFERENCE=true \
+    EXAM_PREP_QUESTION_QUALITY_CHECKPOINT_PATH=/app/backend/artifacts/question_quality_classifier.pt
+
+WORKDIR /app
+
+RUN apt-get update \
+    && apt-get install --no-install-recommends -y libgl1 libglib2.0-0 tesseract-ocr \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY pyproject.toml README.md ./
+COPY backend ./backend
+RUN python -m pip install --no-cache-dir .
+
+RUN mkdir -p /data/materials
+
+EXPOSE 8000
+
+CMD ["uvicorn", "exam_prep.main:app", "--host", "0.0.0.0", "--port", "8000"]
