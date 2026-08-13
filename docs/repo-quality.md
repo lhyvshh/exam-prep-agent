@@ -16,6 +16,10 @@ Do not commit:
 - generated evaluation reports other than the allowlisted delivery summary
 - Playwright screenshots containing learner data
 
+Sanitized product screenshots are allowed only under `docs/screenshots/`. They must use synthetic
+or otherwise public-safe content and must not expose API keys, local paths, learner history, or
+uploaded private documents.
+
 The ignored local output paths are listed in `.gitignore`.
 
 The allowlisted quality dataset, checkpoint, portable export, and evaluation summary under

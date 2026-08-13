@@ -11,7 +11,8 @@
 
 ## Data and artifact hygiene
 
-- [ ] No real API keys, local databases, parsed learner materials, generated screenshots, OCR output, or model checkpoints are included.
+- [ ] No real API keys, local databases, parsed learner materials, OCR output, or unapproved model checkpoints are included.
+- [ ] Screenshots under `docs/screenshots/` use synthetic or public-safe data; runtime captures with learner data remain excluded.
 - [ ] Any added fixtures are deterministic and live under `backend/tests/fixtures/` or `frontend/tests/`.
 
 ## Notes for reviewers

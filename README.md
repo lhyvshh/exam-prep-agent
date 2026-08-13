@@ -249,16 +249,18 @@ This writes a combined report to:
 
 ## Screenshots
 
-Screenshot placeholders live in [docs/screenshots/README.md](docs/screenshots/README.md).
+All screenshots use synthetic course material and contain no API keys or learner documents.
 
-Suggested captures:
+| Resume workspace | Grounded flashcards |
+| --- | --- |
+| [![Course resume overview](docs/screenshots/11-course-resume-overview.png)](docs/screenshots/11-course-resume-overview.png) | [![Flashcard review](docs/screenshots/05-flashcard-review.png)](docs/screenshots/05-flashcard-review.png) |
 
-- config page
-- materials upload
-- dashboard
-- quiz flow
-- mock exam flow
-- wrong-question review
+| Source-matched quiz | Offline package producer |
+| --- | --- |
+| [![Grounded quiz](docs/screenshots/07-grounded-quiz.png)](docs/screenshots/07-grounded-quiz.png) | [![Offline package producer](docs/screenshots/10-offline-package-producer.png)](docs/screenshots/10-offline-package-producer.png) |
+
+See the [complete product gallery](docs/screenshots/README.md) for course setup, source study,
+card browsing, attempt history, mock exam generation, grounded explanations, and Exam Butler.
 
 ## Current verification status
 
