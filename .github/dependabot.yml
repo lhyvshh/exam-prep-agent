@@ -8,6 +8,10 @@ updates:
       python-runtime:
         patterns:
           - "*"
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - version-update:semver-major
 
   - package-ecosystem: npm
     directory: /frontend
@@ -17,6 +21,10 @@ updates:
       frontend-runtime:
         patterns:
           - "*"
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - version-update:semver-major
 
   - package-ecosystem: github-actions
     directory: /
@@ -26,3 +34,7 @@ updates:
       actions:
         patterns:
           - "*"
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - version-update:semver-major
