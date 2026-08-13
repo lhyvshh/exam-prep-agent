@@ -591,6 +591,9 @@ export function CourseMaterialsWorkspace({ courseId }: { courseId: string }): JS
                 type="file"
                 onChange={(event) => setSelectedFile(event.target.files?.[0] ?? null)}
               />
+              <span className="subtle upload-file-status" aria-live="polite">
+                {selectedFile ? selectedFile.name : "No file selected"}
+              </span>
               <button className="primary-button" disabled={isUploading || !selectedFile} type="submit">
                 {isUploading ? "Uploading..." : "Upload book"}
               </button>
@@ -1204,10 +1207,26 @@ function FloatingWindowFrame({
   children: React.ReactNode;
 }): JSX.Element {
   const [position, setPosition] = useState(defaultPosition);
+  const windowRef = useRef<HTMLElement | null>(null);
   const dragRef = useRef<{ pointerId: number; offsetX: number; offsetY: number } | null>(null);
 
   useEffect(() => {
-    setPosition(defaultPosition);
+    const frame = windowRef.current;
+    if (!frame) {
+      return;
+    }
+
+    const viewport = { width: window.innerWidth, height: window.innerHeight };
+    const frameSize = { width: frame.offsetWidth, height: frame.offsetHeight };
+    setPosition(clampFloatingWindowPosition(defaultPosition, viewport, frameSize));
+
+    const handleResize = (): void => {
+      const nextViewport = { width: window.innerWidth, height: window.innerHeight };
+      const nextFrameSize = { width: frame.offsetWidth, height: frame.offsetHeight };
+      setPosition((current) => clampFloatingWindowPosition(current, nextViewport, nextFrameSize));
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, [defaultPosition.x, defaultPosition.y, positionKey]);
 
   function handlePointerDown(event: React.PointerEvent<HTMLElement>): void {
@@ -1227,12 +1246,18 @@ function FloatingWindowFrame({
     if (!dragRef.current || dragRef.current.pointerId !== event.pointerId) {
       return;
     }
-    const maxX = Math.max(16, window.innerWidth - 300);
-    const maxY = Math.max(16, window.innerHeight - 180);
-    setPosition({
-      x: Math.min(Math.max(12, event.clientX - dragRef.current.offsetX), maxX),
-      y: Math.min(Math.max(12, event.clientY - dragRef.current.offsetY), maxY)
-    });
+    const frame = windowRef.current;
+    const nextPosition = {
+      x: event.clientX - dragRef.current.offsetX,
+      y: event.clientY - dragRef.current.offsetY
+    };
+    setPosition(frame
+      ? clampFloatingWindowPosition(
+          nextPosition,
+          { width: window.innerWidth, height: window.innerHeight },
+          { width: frame.offsetWidth, height: frame.offsetHeight }
+        )
+      : nextPosition);
   }
 
   function handlePointerUp(event: React.PointerEvent<HTMLElement>): void {
@@ -1247,6 +1272,7 @@ function FloatingWindowFrame({
       aria-hidden={isMinimized}
       className={`floating-window floating-window-${kind}${isActive ? " floating-window-active" : ""}${isMinimized ? " floating-window-minimized" : ""}`}
       onMouseDown={onFocus}
+      ref={windowRef}
       role="dialog"
       style={{ transform: `translate(${position.x}px, ${position.y}px)`, zIndex }}
     >
@@ -1271,6 +1297,20 @@ function FloatingWindowFrame({
       </div>
     </section>
   );
+}
+
+export function clampFloatingWindowPosition(
+  position: { x: number; y: number },
+  viewport: { width: number; height: number },
+  frame: { width: number; height: number }
+): { x: number; y: number } {
+  const edgeGap = 12;
+  const maxX = Math.max(edgeGap, viewport.width - frame.width - edgeGap);
+  const maxY = Math.max(edgeGap, viewport.height - frame.height - edgeGap);
+  return {
+    x: Math.min(Math.max(edgeGap, position.x), maxX),
+    y: Math.min(Math.max(edgeGap, position.y), maxY)
+  };
 }
 
 function FloatingSourceWindow({
@@ -2541,22 +2581,32 @@ export function SectionQuizModal({
         aria-modal="true"
         aria-label="Quiz this section"
       >
-        <div className="drawer-header">
-          <div>
-            <p className="eyebrow">{state.material.file_name}</p>
-            <h2>Quiz this section</h2>
-            <p>{state.section.normalized_title}</p>
+        {floating ? (
+          <div className="floating-quiz-context">
+            <p className="eyebrow">Current section</p>
+            <strong>{state.section.normalized_title}</strong>
             {focusQuestionType ? (
               <span className="quality-badge">Focus: {focusQuestionType.replace(/_/g, " ")}</span>
             ) : null}
           </div>
-          <div className="action-row">
-            <button className="secondary-button" onClick={() => setIsExpanded((current) => !current)} type="button">
-              {isExpanded ? "Default size" : "Expand"}
-            </button>
-            <button className="secondary-button" onClick={onClose} type="button">Close</button>
+        ) : (
+          <div className="drawer-header">
+            <div>
+              <p className="eyebrow">{state.material.file_name}</p>
+              <h2>Quiz this section</h2>
+              <p>{state.section.normalized_title}</p>
+              {focusQuestionType ? (
+                <span className="quality-badge">Focus: {focusQuestionType.replace(/_/g, " ")}</span>
+              ) : null}
+            </div>
+            <div className="action-row">
+              <button className="secondary-button" onClick={() => setIsExpanded((current) => !current)} type="button">
+                {isExpanded ? "Default size" : "Expand"}
+              </button>
+              <button className="secondary-button" onClick={onClose} type="button">Close</button>
+            </div>
           </div>
-        </div>
+        )}
         <div className="section-quiz-modal-body">
           <div className="two-column-grid">
             <label className="field">

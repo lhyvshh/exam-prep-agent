@@ -1060,6 +1060,14 @@ textarea {
   min-width: min(100%, 280px);
 }
 
+.flashcard-browse-panel .flashcard-review-header .field-label {
+  width: min(100%, 340px);
+}
+
+.flashcard-browse-panel .flashcard-review-header input {
+  width: 100%;
+}
+
 .flashcard-browse-filters {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -2339,8 +2347,16 @@ textarea {
   width: 100%;
   max-width: 100%;
   min-width: 0;
-  color: var(--muted);
+  color: transparent;
   font: inherit;
+}
+
+.book-upload-slot input[type="file"]::file-selector-button {
+  margin-right: 0;
+}
+
+.book-upload-slot .upload-file-status {
+  overflow-wrap: anywhere;
 }
 
 .book-upload-slot .primary-button {
@@ -2688,6 +2704,19 @@ textarea {
   margin-bottom: 6px;
 }
 
+.floating-quiz-context {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.floating-quiz-context p {
+  margin: 0;
+}
+
 .floating-window-dock {
   position: fixed;
   left: 50%;
@@ -2992,6 +3021,10 @@ textarea {
   overflow: auto;
   margin-top: 10px;
   padding: 16px;
+}
+
+.agent-coach-panel-open .agent-coach-body {
+  margin-top: 0;
 }
 
 .agent-coach-header,
@@ -4334,6 +4367,14 @@ input[type="file"]::file-selector-button:hover {
 
 .agent-coach-body {
   box-shadow: var(--shadow-strong);
+}
+
+@media (min-width: 1100px) {
+  body:has(.agent-coach-panel-open) .course-workspace-shell {
+    width: calc(100% - 450px);
+    margin-right: 426px;
+    margin-left: 24px;
+  }
 }
 
 .agent-smart-plan-card {

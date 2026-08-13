@@ -87,13 +87,15 @@ export function AgentCoachPanel({
 
   return (
     <aside className={`agent-coach-panel${isOpen ? " agent-coach-panel-open" : ""}`} aria-label="Exam Butler agent">
-      <button className="agent-coach-toggle" onClick={() => setIsOpen((current) => !current)} type="button">
-        <span className="agent-pulse" aria-hidden="true" />
-        <span>
-          <strong>Exam Butler</strong>
-          <small>Ask about this page</small>
-        </span>
-      </button>
+      {!isOpen ? (
+        <button className="agent-coach-toggle" onClick={() => setIsOpen(true)} type="button">
+          <span className="agent-pulse" aria-hidden="true" />
+          <span>
+            <strong>Exam Butler</strong>
+            <small>Ask about this page</small>
+          </span>
+        </button>
+      ) : null}
 
       {isOpen ? (
         <div className="agent-coach-body">
@@ -109,6 +111,14 @@ export function AgentCoachPanel({
                   {responseMode === "live_llm" ? "Live model" : "Book-grounded fallback"}
                 </span>
               ) : null}
+              <button
+                aria-label="Close Exam Butler"
+                className="secondary-button"
+                onClick={() => setIsOpen(false)}
+                type="button"
+              >
+                Close
+              </button>
               <button className="secondary-button" disabled={isRunning} onClick={() => void handleRunCheck()} type="button">
                 {isRunning ? "Checking..." : "Run progress check"}
               </button>

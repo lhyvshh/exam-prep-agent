@@ -3,7 +3,11 @@ import { cleanup, render, screen, waitFor, within } from "@testing-library/react
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { CourseMaterialsWorkspace, StudySectionModal } from "@/components/courses/course-materials-workspace";
+import {
+  clampFloatingWindowPosition,
+  CourseMaterialsWorkspace,
+  StudySectionModal
+} from "@/components/courses/course-materials-workspace";
 import type {
   CourseMaterialsResponse,
   MaterialRecord,
@@ -60,6 +64,16 @@ afterEach(() => {
   vi.clearAllMocks();
   navigationMock.search = "";
   courseSelectionMock.selectedModuleId = null;
+});
+
+describe("floating window bounds", () => {
+  it("keeps the full window inside the viewport", () => {
+    expect(clampFloatingWindowPosition(
+      { x: 260, y: 72 },
+      { width: 1280, height: 720 },
+      { width: 1180, height: 605 }
+    )).toEqual({ x: 88, y: 72 });
+  });
 });
 
 const workbookMaterial: MaterialRecord = {
@@ -494,6 +508,7 @@ describe("CourseMaterialsWorkspace floating quiz window", () => {
     render(<CourseMaterialsWorkspace courseId="course-demo" />);
 
     await user.click(await screen.findByRole("button", { name: /Quiz this section/i }));
+    expect(screen.getAllByRole("heading", { name: "Quiz this section" })).toHaveLength(1);
     await user.click(screen.getByRole("button", { name: /Generate quiz/i }));
 
     expect(await screen.findByText(/Which situation best illustrates operational risk/i)).toBeInTheDocument();

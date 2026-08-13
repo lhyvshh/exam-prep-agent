@@ -231,6 +231,8 @@ describe("AgentCoachPanel", () => {
     await user.click(screen.getByRole("button", { name: /Exam Butler/i }));
 
     expect((await screen.findAllByText("Exam Butler")).length).toBeGreaterThan(0);
+    expect(screen.queryByRole("button", { name: /^Exam Butler/i })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Close Exam Butler" })).toBeInTheDocument();
     expect(fetchAgentRecommendations).not.toHaveBeenCalled();
     expect(fetchAgentMemory).not.toHaveBeenCalled();
     expect(fetchSmartAgentStudyPlan).not.toHaveBeenCalled();
