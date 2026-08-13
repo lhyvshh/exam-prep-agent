@@ -12,15 +12,16 @@ Do not commit:
 - parsed document stores
 - local SQLite databases
 - OCR output
-- PyTorch checkpoints other than the allowlisted delivery checkpoint
+- model artifacts other than the allowlisted delivery checkpoint and its portable export
 - generated evaluation reports other than the allowlisted delivery summary
 - Playwright screenshots containing learner data
 
 The ignored local output paths are listed in `.gitignore`.
 
-The allowlisted quality dataset, checkpoint, and evaluation summary under `backend/data/` and
-`backend/artifacts/` are deterministic deployment fixtures. Update them together through the
-documented training command and include the resulting tests and metrics in the same change.
+The allowlisted quality dataset, checkpoint, portable export, and evaluation summary under
+`backend/data/` and `backend/artifacts/` are deterministic deployment fixtures. Update them together
+through the documented training and export commands, then include the resulting tests and metrics in
+the same change.
 
 ## Verification gate
 

@@ -1599,12 +1599,17 @@ Set correct_option_id to the supported option.
 
         raw_ml_score = quality.score
         combined_score = round((quality.score + validation.score) / 2.0, 4)
-        if validation.accepted and quality.model_source != "pytorch_checkpoint":
-            combined_score = max(0.55, combined_score)
         quality.score = combined_score
         quality.confidence = round(min(1.0, (quality.confidence + validation.score) / 2.0), 4)
-        torch_gate_passed = quality.model_source != "pytorch_checkpoint" or raw_ml_score >= 0.45
+        uses_pytorch_model = quality.model_source.startswith("pytorch")
+        torch_gate_passed = (
+            raw_ml_score >= 0.45
+            if uses_pytorch_model
+            else not self.question_quality_service.enable_torch
+        )
         quality.notes = [*quality.notes, *validation.notes]
+        if not uses_pytorch_model and self.question_quality_service.enable_torch:
+            quality.notes.append("Required PyTorch quality model is unavailable.")
         has_serious_quality_note = any(
             fragment in " ".join(quality.notes).lower()
             for fragment in SERIOUS_QUALITY_NOTE_FRAGMENTS

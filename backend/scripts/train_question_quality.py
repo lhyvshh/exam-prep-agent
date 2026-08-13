@@ -4,10 +4,7 @@ import argparse
 import json
 import random
 from pathlib import Path
-
-import torch
-from torch import nn
-from torch.optim import Adam
+from typing import TYPE_CHECKING
 
 from exam_prep.ml.dataset import (
     INDEX_TO_TRAINING_LABEL,
@@ -17,7 +14,11 @@ from exam_prep.ml.dataset import (
     load_question_quality_examples,
     numeric_features,
 )
-from exam_prep.ml.question_quality_model import QuestionQualityClassifier
+
+if TYPE_CHECKING:
+    import torch
+
+    from exam_prep.ml.question_quality_model import QuestionQualityClassifier
 
 
 def repository_relative_path(path: Path, project_root: Path) -> str:
@@ -58,6 +59,8 @@ def build_batch(
     examples: list[QuestionQualityExample],
     vocabulary: dict[str, int],
 ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
+    import torch
+
     token_indices: list[int] = []
     offsets: list[int] = []
     numeric_rows: list[list[float]] = []
@@ -83,6 +86,9 @@ def evaluate(
     examples: list[QuestionQualityExample],
     vocabulary: dict[str, int],
 ) -> dict[str, float]:
+    import torch
+    from torch import nn
+
     model.eval()
     token_indices, offsets, numeric_tensor, labels = build_batch(examples, vocabulary)
     with torch.no_grad():
@@ -97,6 +103,12 @@ def evaluate(
 
 
 def main() -> None:
+    import torch
+    from torch import nn
+    from torch.optim import Adam
+
+    from exam_prep.ml.question_quality_model import QuestionQualityClassifier
+
     args = parse_args()
     project_root = Path(__file__).resolve().parents[2]
     random.seed(args.seed)

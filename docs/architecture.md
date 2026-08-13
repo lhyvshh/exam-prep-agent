@@ -102,10 +102,11 @@ LangGraph runs store node status, agent messages, recommendations, and quality s
 
 ## PyTorch Quality Layer
 
-The bundled PyTorch question-quality model scores generated questions after deterministic grounding,
-format, answer, rationale, and uniqueness checks. Low-quality outputs are regenerated and cannot enter
-an offline package. The training set includes valid 3-choice through 8-choice assessment shapes so
-source format is not confused with quality.
+The bundled PyTorch-trained question-quality model scores generated questions after deterministic
+grounding, format, answer, rationale, and uniqueness checks. A native PyTorch checkpoint is preferred;
+platforms without a supported wheel use a hash-verified NumPy export with tested score parity.
+Low-quality outputs are regenerated and cannot enter an offline package. The training set includes
+valid 3-choice through 8-choice assessment shapes so source format is not confused with quality.
 
 ## Testing
 

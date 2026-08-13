@@ -1,6 +1,6 @@
 # Exam Prep Agent Framework
 
-Local-first exam preparation platform with a typed `FastAPI` backend, `LangGraph` orchestration boundaries, a `Next.js` frontend, local storage, and a required PyTorch-backed question quality gate.
+Local-first exam preparation platform with a typed `FastAPI` backend, `LangGraph` orchestration boundaries, a `Next.js` frontend, local storage, and a required PyTorch-trained question quality gate.
 
 ## What is in this repo
 
@@ -10,7 +10,7 @@ Local-first exam preparation platform with a typed `FastAPI` backend, `LangGraph
 - local retrieval and grounded question generation
 - quiz grading, mastery tracking, wrong-concept storage, remediation, and mock exam analytics
 - validated, self-contained study-card and mock-exam packages for PDF-based courses such as FRM, CFA, and other professional or academic exams
-- a trainable PyTorch question quality classifier with local checkpoint and evaluation outputs
+- a trainable PyTorch question quality classifier with a hash-verified portable runtime
 - backend and frontend automated tests, regression fixtures, and evaluation scripts
 - GitHub CI, issue templates, contribution guidance, and artifact hygiene policy
 
@@ -34,7 +34,7 @@ At a glance:
 - repositories isolate local storage
 - LangGraph state and node boundaries stay separate from deterministic services
 - frontend types mirror backend response contracts
-- delivery validation requires the bundled PyTorch checkpoint; heuristic scoring is diagnostic only
+- delivery validation requires the bundled PyTorch model; heuristic scoring is diagnostic only
 - FRM Part I remains an explicit preset with its 20/20/30/30 topic allocation
 - source-defined exams preserve the uploaded exam's length, answer-choice count, topic/LO, question type, and difficulty one for one
 
@@ -211,16 +211,26 @@ Repository hygiene expectations are documented in [docs/repo-quality.md](docs/re
 
 ### Question quality classifier artifacts
 
-The delivery dataset, checkpoint, and training metrics are versioned so a fresh deployment has the
-same quality gate:
+The delivery dataset, checkpoint, portable export, and training metrics are versioned so a fresh
+deployment has the same quality gate:
 
 - dataset: `backend/data/question_quality_labeled.jsonl`
 - checkpoint: `backend/artifacts/question_quality_classifier.pt`
+- portable metadata: `backend/artifacts/question_quality_classifier.portable.json`
+- portable weights: `backend/artifacts/question_quality_classifier.portable.npz`
 - training metrics: `backend/artifacts/question_quality_eval.json`
 
-Use the tracked training script to regenerate local artifacts when needed:
+The native PyTorch checkpoint is used where a current supported PyTorch wheel is available. Intel
+macOS uses the exact NumPy export, which is cryptographically bound to that checkpoint and tested
+for scoring parity. Use the tracked scripts to regenerate the model artifacts when needed:
 
 - training script: [backend/scripts/train_question_quality.py](backend/scripts/train_question_quality.py)
+- portable exporter: [backend/scripts/export_question_quality.py](backend/scripts/export_question_quality.py)
+
+```bash
+PYTHONPATH=backend/src python3 backend/scripts/train_question_quality.py
+PYTHONPATH=backend/src python3 backend/scripts/export_question_quality.py
+```
 
 ### Regression fixtures
 
@@ -259,7 +269,7 @@ Most recently verified locally:
 - frontend dev server starts successfully
 - offline package API, CLI, validation, download, and standalone browser flows pass
 - PyTorch training script runs and saves a checkpoint
-- PyTorch inference wrapper loads the saved checkpoint
+- quality inference loads the native checkpoint or its hash-verified portable export
 
 ## Roadmap
 

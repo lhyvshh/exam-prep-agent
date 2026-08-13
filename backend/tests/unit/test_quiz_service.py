@@ -29,7 +29,11 @@ from exam_prep.schemas.quiz import (
 from exam_prep.schemas.retrieval import RetrievalHit, RetrievalQueryResponse
 from exam_prep.services.quiz_job_runner import QuizJobRunner
 from exam_prep.services.quiz_service import GeneratedQuestionOutcome, QuizService
-from exam_prep.services.question_pipeline import extractKnowledge, validateQuestion
+from exam_prep.services.question_pipeline import (
+    QuestionValidationResult,
+    extractKnowledge,
+    validateQuestion,
+)
 
 
 class FailingLLMClient:
@@ -127,6 +131,30 @@ class RejectFirstQualityService(QuestionQualityInferenceService):
             model_version="question-quality-test",
             model_source="pytorch_checkpoint",
             notes=["Synthetic retry accepted."],
+        )
+
+
+class StaticQualityService(QuestionQualityInferenceService):
+    def __init__(
+        self,
+        checkpoint_path: Path,
+        *,
+        model_source: str,
+        enable_torch: bool = True,
+    ) -> None:
+        super().__init__(checkpoint_path=checkpoint_path, enable_torch=enable_torch)
+        self.model_source = model_source
+
+    def score_generated_question(self, question: QuizQuestion) -> QuestionQualityValidation:
+        del question
+        return QuestionQualityValidation(
+            score=0.88,
+            confidence=0.76,
+            label=QuestionQualityLabel.HIGH_QUALITY,
+            accepted_for_delivery=True,
+            model_version="question-quality-test",
+            model_source=self.model_source,
+            notes=[],
         )
 
 
@@ -254,6 +282,91 @@ def _source_chunk(index: int, *, text: str | None = None) -> SourceChunk:
         locator=SourceLocator(section_index=index, page_number=index),
         citation_label=f"notes.txt | Section {index}",
     )
+
+
+def test_quiz_quality_gate_accepts_portable_pytorch_export(tmp_path: Path) -> None:
+    service = QuizService(
+        material_store=LocalMaterialStore(tmp_path / "materials"),
+        vector_store=LocalVectorStore(tmp_path / "materials"),
+        quiz_store=LocalQuizStore(tmp_path / "materials"),
+        question_quality_service=StaticQualityService(
+            tmp_path / "unused.pt",
+            model_source="pytorch_portable_export",
+        ),
+        runtime_config=UserLLMConfig(
+            provider=LLMProvider.OPENAI,
+            model="gpt-5.4-mini",
+            demo_mode=True,
+        ),
+        settings=Settings(),
+    )
+    question = QuizQuestion(
+        question_id="portable-quality",
+        question_type=QuestionType.MCQ,
+        concept="Liquidity risk",
+        section_title="Liquidity risk measurement",
+        difficulty=0.6,
+        prompt="Which statement best explains liquidity risk under stressed markets?",
+        options=[
+            QuizQuestionOption(option_id="A", text="Trading costs can rise as depth declines."),
+            QuizQuestionOption(option_id="B", text="Market depth is guaranteed to remain fixed."),
+            QuizQuestionOption(option_id="C", text="Bid-ask spreads always narrow during stress."),
+            QuizQuestionOption(option_id="D", text="Funding needs disappear during stress."),
+        ],
+        citations=[_source_chunk(1)],
+        rationale="The source explains that declining market depth raises liquidation costs.",
+    )
+
+    annotated = service._annotate_question_quality(
+        question,
+        QuestionValidationResult(accepted=True, score=0.9),
+    )
+
+    assert annotated.quality_validation is not None
+    assert annotated.quality_validation.accepted_for_delivery is True
+
+
+def test_quiz_quality_gate_rejects_heuristic_fallback(tmp_path: Path) -> None:
+    service = QuizService(
+        material_store=LocalMaterialStore(tmp_path / "materials"),
+        vector_store=LocalVectorStore(tmp_path / "materials"),
+        quiz_store=LocalQuizStore(tmp_path / "materials"),
+        question_quality_service=StaticQualityService(
+            tmp_path / "unused.pt",
+            model_source="heuristic_fallback",
+        ),
+        runtime_config=UserLLMConfig(
+            provider=LLMProvider.OPENAI,
+            model="gpt-5.4-mini",
+            demo_mode=True,
+        ),
+        settings=Settings(),
+    )
+    question = QuizQuestion(
+        question_id="heuristic-quality",
+        question_type=QuestionType.MCQ,
+        concept="Liquidity risk",
+        section_title="Liquidity risk measurement",
+        difficulty=0.6,
+        prompt="Which statement best explains liquidity risk under stressed markets?",
+        options=[
+            QuizQuestionOption(option_id="A", text="Trading costs can rise as depth declines."),
+            QuizQuestionOption(option_id="B", text="Market depth is guaranteed to remain fixed."),
+            QuizQuestionOption(option_id="C", text="Bid-ask spreads always narrow during stress."),
+            QuizQuestionOption(option_id="D", text="Funding needs disappear during stress."),
+        ],
+        citations=[_source_chunk(1)],
+        rationale="The source explains that declining market depth raises liquidation costs.",
+    )
+
+    annotated = service._annotate_question_quality(
+        question,
+        QuestionValidationResult(accepted=True, score=0.9),
+    )
+
+    assert annotated.quality_validation is not None
+    assert annotated.quality_validation.accepted_for_delivery is False
+    assert any("model is unavailable" in note for note in annotated.quality_validation.notes)
 
 
 def test_select_hits_preserves_learning_outcome_diversity_within_same_module(

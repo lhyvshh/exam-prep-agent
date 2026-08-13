@@ -8,6 +8,7 @@ BACKEND_TYPE_TARGETS := \
 	backend/src/exam_prep/llm/registry.py \
 	backend/src/exam_prep/agent_core/models.py \
 	backend/src/exam_prep/agent_core/profiles.py \
+	backend/src/exam_prep/ml/inference.py \
 	backend/src/exam_prep/ml/question_quality_model.py
 
 .PHONY: setup-backend setup-frontend setup lint-backend type-backend test-backend type-frontend test-frontend test-e2e-offline build-frontend test check eval run-backend run-frontend

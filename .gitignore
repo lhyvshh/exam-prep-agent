@@ -53,6 +53,8 @@ backend/data/*
 !backend/artifacts/
 backend/artifacts/*
 !backend/artifacts/question_quality_classifier.pt
+!backend/artifacts/question_quality_classifier.portable.json
+!backend/artifacts/question_quality_classifier.portable.npz
 !backend/artifacts/question_quality_eval.json
 output/
 uploads/
